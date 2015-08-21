@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
+    <OCD id="com.toogram.cep.ui.dscomponent" name="%com.toogram.cep.ui.dscomponent.name" description="%com.toogram.cep.ui.dscomponent.description"/>
+    <Designate pid="com.toogram.cep.ui.dscomponent">
+        <Object ocdref="com.toogram.cep.ui.dscomponent"/>
+    </Designate>
+</metatype:MetaData>

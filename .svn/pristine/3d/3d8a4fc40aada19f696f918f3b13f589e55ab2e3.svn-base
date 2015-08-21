@@ -1,0 +1,293 @@
+/*
+ * Copyright 2005-2007 WSO2, Inc. (http://wso2.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.toogram.cep.ui.internal;
+
+import static org.wso2.carbon.CarbonConstants.PRODUCT_XML;
+import static org.wso2.carbon.CarbonConstants.PRODUCT_XML_PROPERTIES;
+import static org.wso2.carbon.CarbonConstants.PRODUCT_XML_PROPERTY;
+import static org.wso2.carbon.CarbonConstants.PRODUCT_XML_WSO2CARBON;
+import static org.wso2.carbon.CarbonConstants.WSO2CARBON_NS;
+
+import org.wso2.carbon.utils.CarbonUtils;
+import com.toogram.cep.ui.TilesJspServlet;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ContentHandler;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.eclipse.equinox.http.helper.ContextPathServletAdaptor;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.http.HttpContext;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.service.url.URLConstants;
+import org.osgi.service.url.URLStreamHandlerService;
+import org.eclipse.equinox.http.helper.BundleEntryHttpContext;
+import org.eclipse.equinox.jsp.jasper.JspServlet;
+import org.osgi.service.http.NamespaceException;
+import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.base.api.ServerConfigurationService;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.ui.BasicAuthUIAuthenticator;
+import org.wso2.carbon.ui.CarbonProtocol;
+import org.wso2.carbon.ui.CarbonSSOSessionManager;
+import org.wso2.carbon.ui.CarbonSecuredHttpContext;
+import org.wso2.carbon.ui.CarbonUIAuthenticator;
+import org.wso2.carbon.ui.CarbonUIUtil;
+import org.wso2.carbon.ui.DefaultCarbonAuthenticator;
+import org.wso2.carbon.ui.TextJavascriptHandler;
+import org.wso2.carbon.ui.UIAuthenticationExtender;
+import org.wso2.carbon.ui.UIResourceRegistry;
+import org.wso2.carbon.ui.deployment.UIBundleDeployer;
+import org.wso2.carbon.ui.deployment.beans.CarbonUIDefinitions;
+import org.wso2.carbon.ui.deployment.beans.Context;
+import org.wso2.carbon.ui.deployment.beans.CustomUIDefenitions;
+import org.wso2.carbon.ui.tracker.AuthenticatorRegistry;
+import org.wso2.carbon.ui.transports.FileDownloadServlet;
+import org.wso2.carbon.ui.transports.FileUploadServlet;
+import org.wso2.carbon.ui.util.UIAnnouncementDeployer;
+import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.ConfigurationContextService;
+
+/**
+ * @scr.component name="com.toogram.cep.ui.dscomponent" immediate="true"
+ * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
+ * cardinality="1..1" policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="1..1" policy="dynamic"  bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+ * @scr.reference name="server.configuration" interface="org.wso2.carbon.base.api.ServerConfigurationService"
+ * cardinality="1..1" policy="dynamic" bind="setServerConfigurationService" unbind="unsetServerConfigurationService"
+ * @scr.reference name="package.admin" interface="org.osgi.service.packageadmin.PackageAdmin"
+ * cardinality="1..1" policy="dynamic" bind="setPackageAdmin" unbind="unsetPackageAdmin"
+ * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService"
+ * cardinality="1..1" policy="dynamic"  bind="setHttpService" unbind="unsetHttpService"
+ * @scr.reference name="user.realmservice.default" interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1" policy="dynamic" bind="setRealmService"  unbind="unsetRealmService"
+ * @scr.reference name="ui.authentication.extender" interface="org.wso2.carbon.ui.UIAuthenticationExtender"
+ * cardinality="0..1" policy="dynamic" bind="setUIAuthenticationExtender"  unbind="unsetUIAuthenticationExtender"
+ */
+public class CepUIServiceComponent {
+
+    private static Log log = LogFactory.getLog(CepUIServiceComponent.class);
+
+    private static PackageAdmin packageAdminInstance;
+    private static RegistryService registryServiceInstance;
+    private static HttpService httpServiceInstance;
+    private static ConfigurationContextService ccServiceInstance;
+    private static ServerConfigurationService serverConfiguration;
+    private static RealmService realmService;
+    private static List<UIAuthenticationExtender> authenticationExtenders =
+            new LinkedList<UIAuthenticationExtender>();
+
+    private BundleContext bundleContext;
+
+    private Servlet adaptedJspServlet;
+
+    protected void activate(ComponentContext ctxt) {
+        try {
+            start(ctxt.getBundleContext());            
+            
+            log.info("CEP UI bundle is activated ");	
+        } catch (Throwable e) {
+            log.error("CEP UI bundle error", e);
+        }
+    }
+
+    protected void deactivate(ComponentContext ctxt) {
+        log.debug("CEP UI bundle  deactivated ");
+    }
+
+    public void start(BundleContext context) throws Exception {
+    	
+        this.bundleContext = context;
+        final HttpService httpService = getHttpService(context); 
+        
+        ServerConfigurationService serverConfig = getServerConfiguration();
+        
+        
+        ConfigurationContext serverCfgCtx =
+                getConfigurationContextService().getServerConfigContext();
+        
+        String webContext = "toogram"; // The subcontext for the Carbon Mgt Console
+               
+        
+        Dictionary<String, String> initparams = new Hashtable<String, String>();
+        initparams.put("servlet-name", "TilesServlet");
+        initparams.put("definitions-config", "/WEB-INF/tiles-defs.xml");
+        
+        initparams.put("org.apache.tiles.context.TilesContextFactory",
+                       "org.apache.tiles.context.enhanced.EnhancedContextFactory");
+        initparams.put("org.apache.tiles.factory.TilesContainerFactory.MUTABLE", "true");
+        initparams.put("org.apache.tiles.definition.DefinitionsFactory",
+                       "org.wso2.carbon.tiles.CarbonUrlDefinitionsFactory");
+        
+        HttpContext commonContext = new BundleEntryHttpContext(bundleContext.getBundle(), "/web");        
+        
+        httpService.registerServlet("/" + webContext+"/*.tiles", new org.apache.tiles.web.startup.TilesServlet(),
+		                initparams,
+		                commonContext); 
+        httpService.registerResources("/" + webContext, "/", commonContext); 
+
+        Servlet adaptedJspServlet = new ContextPathServletAdaptor(new TilesJspServlet(bundleContext.getBundle(), "/web"),"/" + webContext); 
+        httpService.registerServlet("/" + webContext+"/*.jsp", adaptedJspServlet, null, commonContext);         
+    }
+
+   
+
+    public static synchronized Bundle getBundle(Class clazz) {
+        if (packageAdminInstance == null) {
+            throw new IllegalStateException("Not started");
+        } //$NON-NLS-1$
+        return packageAdminInstance.getBundle(clazz);
+    }
+
+    protected void setConfigurationContextService(ConfigurationContextService contextService) {
+        ccServiceInstance = contextService;
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
+        ccServiceInstance = null;
+    }
+
+    protected void setRegistryService(RegistryService registryService) {
+        registryServiceInstance = registryService;
+    }
+
+    protected void unsetRegistryService(RegistryService registryService) {
+        registryServiceInstance = null;
+    }
+
+    protected void setServerConfigurationService(ServerConfigurationService serverConfiguration) {
+    	CepUIServiceComponent.serverConfiguration = serverConfiguration;
+    }
+
+    protected void unsetServerConfigurationService(ServerConfigurationService serverConfiguration) {
+    	CepUIServiceComponent.serverConfiguration = null;
+    }
+
+    protected void setPackageAdmin(PackageAdmin packageAdmin) {
+        packageAdminInstance = packageAdmin;
+    }
+
+    protected void unsetPackageAdmin(PackageAdmin packageAdmin) {
+        packageAdminInstance = null;
+    }
+
+    protected void setHttpService(HttpService httpService) {
+        httpServiceInstance = httpService;
+    }
+
+    protected void unsetHttpService(HttpService httpService) {
+        httpServiceInstance = null;
+    }
+
+    protected void setRealmService(RealmService realmService) {
+    	CepUIServiceComponent.realmService = realmService;
+    }
+
+    protected void unsetRealmService(RealmService realmService) {
+    	CepUIServiceComponent.realmService = null;
+    }
+
+    public static RealmService getRealmService() {
+        return realmService;
+    }
+
+    protected void setUIAuthenticationExtender(UIAuthenticationExtender authenticationExtender) {
+    	CepUIServiceComponent.authenticationExtenders.add(authenticationExtender);
+    }
+
+    protected void unsetUIAuthenticationExtender(UIAuthenticationExtender authenticationExtender) {
+    	CepUIServiceComponent.authenticationExtenders.remove(authenticationExtender);
+    }
+
+    public static UIAuthenticationExtender[] getUIAuthenticationExtenders() {
+        return authenticationExtenders.toArray(
+                new UIAuthenticationExtender[authenticationExtenders.size()]);
+    }
+
+    public static HttpService getHttpService(BundleContext context) {
+    	ServiceReference<HttpService> reference = context.getServiceReference(HttpService.class);
+        HttpService httpService = context.getService(reference);
+        return httpService;
+    }
+
+    public static ConfigurationContextService getConfigurationContextService() {
+        if (ccServiceInstance == null) {
+            String msg = "Before activating CEP UI bundle, an instance of "
+                         + "UserRealm service should be in existence";
+            log.error(msg);
+            throw new RuntimeException(msg);
+        }
+        return ccServiceInstance;
+    }
+
+    public static RegistryService getRegistryService() {
+        if (registryServiceInstance == null) {
+            String msg = "Before activating CEP UI bundle, an instance of "
+                         + "RegistryService should be in existence";
+            log.error(msg);
+            throw new RuntimeException(msg);
+        }
+        return registryServiceInstance;
+    }
+
+    public static ServerConfigurationService getServerConfiguration() {
+        if (serverConfiguration == null) {
+            String msg = "Before activating CEP UI bundle, an instance of "
+                         + "ServerConfiguration Service should be in existence";
+            log.error(msg);
+            throw new RuntimeException(msg);
+        }
+        return serverConfiguration;
+    }
+
+    public static PackageAdmin getPackageAdmin() throws Exception {
+        if (packageAdminInstance == null) {
+            String msg = "Before activating CEP UI bundle, an instance of "
+                         + "PackageAdmin Service should be in existance";
+            log.error(msg);
+            throw new Exception(msg);
+        }
+        return packageAdminInstance;
+    }    
+}

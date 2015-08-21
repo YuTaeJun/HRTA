@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0">
+    <scr:component enabled="true" immediate="true" name="com.toogram.cep.ui.dscomponent">
+        <implementation class="com.toogram.cep.ui.internal.CepUIServiceComponent"/>
+        <property name="service.pid" value="com.toogram.cep.ui.dscomponent"/>
+        <reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"/>
+        <reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"/>
+        <reference name="server.configuration" interface="org.wso2.carbon.base.api.ServerConfigurationService" cardinality="1..1" policy="dynamic" bind="setServerConfigurationService" unbind="unsetServerConfigurationService"/>
+        <reference name="package.admin" interface="org.osgi.service.packageadmin.PackageAdmin" cardinality="1..1" policy="dynamic" bind="setPackageAdmin" unbind="unsetPackageAdmin"/>
+        <reference name="http.service" interface="org.osgi.service.http.HttpService" cardinality="1..1" policy="dynamic" bind="setHttpService" unbind="unsetHttpService"/>
+        <reference name="user.realmservice.default" interface="org.wso2.carbon.user.core.service.RealmService" cardinality="1..1" policy="dynamic" bind="setRealmService" unbind="unsetRealmService"/>
+        <reference name="ui.authentication.extender" interface="org.wso2.carbon.ui.UIAuthenticationExtender" cardinality="0..1" policy="dynamic" bind="setUIAuthenticationExtender" unbind="unsetUIAuthenticationExtender"/>
+    </scr:component>
+</components>

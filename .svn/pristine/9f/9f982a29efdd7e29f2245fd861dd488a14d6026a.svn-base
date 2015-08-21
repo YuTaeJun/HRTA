@@ -1,0 +1,120 @@
+/*나눔웹폰트*/
+@import url("//cdn.jsdelivr.net/font-nanum/1.0/nanumgothic/nanumgothic.css");
+@import url("//cdn.jsdelivr.net/font-nanum/1.0/nanumbarungothic/nanumbarungothic.css");
+@import url("//cdn.jsdelivr.net/font-nanum/1.0/nanumgothiccoding/nanumgothiccoding.css");
+@import url("//cdn.jsdelivr.net/font-nanum/1.0/nanummyeongjo/nanummyeongjo.css");
+@import url("//cdn.jsdelivr.net/font-nanum/1.0/nanumpenscript/nanumpenscript.css");
+@import url("//cdn.jsdelivr.net/font-nanum/1.0/nanumbrushscript/nanumbrushscript.css");
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+/*reset*/
+* {
+	font-family: 'Nanum Barun Gothic', sans-serif;
+ @include box-sizing(border-box);
+}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 12px;
+	font-family: 'Open Sans','나눔바른고딕','NanumBarunGothic','Nanum Barun Gothic', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	vertical-align: baseline;
+	line-height: 1;
+	color: #454545;
+}
+body {
+	background: #fff;
+}
+caption, legend {
+	font-size: 0;
+	height: 0;
+	line-height: 0;
+	visibility: hidden;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after, q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+td input[type=text], td input[type=password] {
+	height: 21px;
+	line-height: 21px;
+	border: 1px solid #dddddd;
+}
+td input, td select {
+	vertical-align: middle;
+}
+img {max-width: 100%;}
+em {
+	font-style: normal;
+}
+a {
+	color: #333!important;
+	text-decoration: none!important;
+}
+
+
+select {  }
+select option {color:#6a6a6a; line-height:20px;}
+
+input[type=submit], button {
+	cursor: pointer;
+}
+
+button {border: 0; background: none; padding: 0; margin: 0;}
+
+::-ms-clear {
+ display: none;
+}
+
+*, *:before, *:after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+#wrap {
+	width: 100%;
+}
+
+#header {
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	background: #ddd;
+}
+
+#container {
+	padding: 1%;
+	background: #ddd;
+}
+#tabNav {
+	overflow: hidden;
+}
+#tabNav li {
+	float: left;
+	margin: 0 .4%;
+}
+#tabNav li a {
+	display: block;
+	padding: 0 20%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	background: #c8c8c8;
+	border: 1px solid #c8c8c8;
+}

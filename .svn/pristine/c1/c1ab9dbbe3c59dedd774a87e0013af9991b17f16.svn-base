@@ -1,0 +1,106 @@
+/*
+*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package com.toogram.cep.ui;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
+
+import com.toogram.cep.ui.action.ActionHelper;
+
+//import org.wso2.carbon.ui.deployment.beans.CarbonUIDefinitions;
+import org.eclipse.equinox.jsp.jasper.JspServlet;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+public class TilesJspServlet extends JspServlet {
+    private static final long serialVersionUID = 1L;
+    private static Log log = LogFactory.getLog(TilesJspServlet.class);
+
+    public TilesJspServlet(Bundle bundle, String resourcePath) {
+        super(bundle, resourcePath);
+    }
+
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String actionUrl = request.getRequestURI();
+
+        //This is the layout page defined in
+        //"/org.wso2.carbon.component/src/main/resources/web/WEB-INF/tiles/main_defs.xml"
+        //Need to serve http requests other than to tiles body page,
+        //using the normal OSGi way
+        
+        
+        //여기서 만약 쿠키가 없다면, actionㅕ
+        
+        
+
+        //retrieve urls that should be by-passed from tiles servlet
+        String resourceURI = actionUrl.replaceFirst(request.getContextPath() + "/", "../");
+
+        //tile 구조로 표시하지 않을 경우에 아래의 action URL에서 필터링 하면 된다.
+        if ((actionUrl.lastIndexOf("/layout/template.jsp") > -1)
+                || actionUrl.lastIndexOf("ajaxprocessor.jsp") > -1
+                || actionUrl.lastIndexOf("hrta_login.jsp") > -1
+                || actionUrl.indexOf("gadgets/js") > -1) {
+            super.service(request, response);
+        } else {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("request.getContextPath() : " + request.getContextPath());
+                    log.debug("actionUrl : " + actionUrl);
+                }
+                
+                //index.jsp가 아니면 세션검사 한다.
+                if(actionUrl.indexOf("/cep-admin/index.jsp") < 0) {
+                
+	                HttpSession session = request.getSession(false);
+	                
+	                //세션이 업승면 그냥 다시 respose 해 버린다.
+	                if(session == null) {
+	                	response.sendRedirect("../cep-admin/hrta_login.jsp");
+	                	return;
+	                }
+	                
+	                //세션 값이 비어 있다면
+	                String SEVER_URL = (String)session.getAttribute("serverURL");
+	                String sessionCookie = (String)session.getAttribute("authCookie");
+	                if(SEVER_URL == null || "".equals(SEVER_URL) || "null".equals(SEVER_URL) || 
+	    	        		sessionCookie == null || "".equals(sessionCookie) || "null".equals(sessionCookie)) {
+	    	        	response.sendRedirect("../cep-admin/hrta_login.jsp");
+	    	        	return;
+	    	        }
+                }
+                
+                String newPath = actionUrl.replaceFirst(request.getContextPath(), "");
+                
+                ActionHelper.render(newPath, request, response);
+            } catch (Exception e) {
+                log.fatal("Fatal error occurred while rendering UI using Tiles.", e);
+            }
+        }
+    }
+}

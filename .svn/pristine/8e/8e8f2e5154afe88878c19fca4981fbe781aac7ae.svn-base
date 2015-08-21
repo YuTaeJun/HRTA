@@ -1,0 +1,179 @@
+package com.toogram.cep.ui.utils;
+
+import java.util.HashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class ToogramBundleUtils {
+	
+	private static Log log = LogFactory.getLog(ToogramBundleUtils.class);
+	
+	private static HashMap<String, String>  InputAdaptorBundle = new HashMap<String, String>();
+	private static HashMap<String, String>  OutputAdaptorBundle = new HashMap<String, String>();
+	
+	private static void fillInputAdaptorBundle() {
+		
+		//데이터가 있으면 그냥 리턴
+		if( InputAdaptorBundle.size() > 0 ) return;
+		
+		InputAdaptorBundle.put("Email Address","메일주소");
+		InputAdaptorBundle.put("Subject","제목");
+		InputAdaptorBundle.put("Default Subject","기본 제목");
+		InputAdaptorBundle.put("The default outgoing email subject","발송시 기본 설정 제목");
+		InputAdaptorBundle.put("Receiving Mail Address","메일 수신 주소");
+		InputAdaptorBundle.put("The mail address from which this service should fetch incoming mails.","송신된 메일을 가져올 메일 주소");
+		InputAdaptorBundle.put("Receiving Mail Protocol","메일 프로토콜");
+		InputAdaptorBundle.put("The mail protocol to be used to receive messages.","메일을 수신하기 위한 메일 프로토콜");
+		InputAdaptorBundle.put("Poll Interval (in seconds)","풀링 주기");
+		InputAdaptorBundle.put("A positive integer","1보다 큰 정수");
+		InputAdaptorBundle.put("Receiving Mail Protocol Host","메일 서버 호스트");
+		InputAdaptorBundle.put("Receiving Mail Protocol Port","메일 서버 포트");
+		InputAdaptorBundle.put("User Name","사용자명");
+		InputAdaptorBundle.put("Password","비밀번호");
+		InputAdaptorBundle.put("Receiving Mail Protocol Port SocketFactory Class","메일 수신 서버의 Port SocketFactory Class");
+		InputAdaptorBundle.put("Receiving Mail Protocol Port SocketFactory Fallback","메일 수신 서버의 Port SocketFactory Fallback");
+		InputAdaptorBundle.put("Email Service Name","E-mail 서비스명");
+		InputAdaptorBundle.put("Receiving email subject must be \"SOAPAction: urn:{Email Service Name}\"","송신 메일의 주소는 반드시 \"SOAPAction: urn:{Email Service Name}\" 형식이어야 함");
+		InputAdaptorBundle.put("File path","파일 경로");
+		InputAdaptorBundle.put("Eg: /home/cep/cep_3.0.0/wso2cep-3.0.0/repository/logs/wso2carbon.log","예: /home/cep/cep_3.0.0/wso2cep-3.0.0/repository/logs/wso2carbon.log");
+		InputAdaptorBundle.put("Topic","토픽");
+		InputAdaptorBundle.put("JNDI Initial Context Factory Class","JNDI Initial Context Factory Class");
+		InputAdaptorBundle.put("JNDI initial context factory class. The class must implement the java.naming.spi.InitialContextFactory interface.","JNDI initial context factory class. java.naming.spi.InitialContextFactory interface를 상속 받아야 함");
+		InputAdaptorBundle.put("JNDI Provider URL","JNDI Provider URL");
+		InputAdaptorBundle.put("URL of the JNDI provider.","JNDI provider URL");
+		InputAdaptorBundle.put("The JMS connection username","JMS 접속 사용자명");
+		InputAdaptorBundle.put("The JMS connection password","JMS 접속 패스워드");
+		InputAdaptorBundle.put("Connection Factory JNDI Name","Connection Factory JNDI Name");
+		InputAdaptorBundle.put("The JNDI name of the connection factory.","JMS 접속을 위한 Connection Factory JNDI Name");
+		InputAdaptorBundle.put("Enable Durable Subscription","Durable Subscription 허용");
+		InputAdaptorBundle.put("Whether the subscription is durable or not.","Durable Subscription 허용 여부");
+		InputAdaptorBundle.put("Durable Subscriber Name","Durable Subscription 명");
+		InputAdaptorBundle.put("Name of the durable subscriber.","Durable Subscription 적용시 설정 명");
+		InputAdaptorBundle.put("Destination Type","목적지 유형");
+		InputAdaptorBundle.put("Type of the destination.","JMS 목적지의 유형");
+		InputAdaptorBundle.put("Topic/Queue Name","Topic/Queue Name");
+		InputAdaptorBundle.put("Topic/Queue name of the input stream","인풋 스트림으로 전달될 Topic/Queue Name");
+		InputAdaptorBundle.put("Stream Version","스트림 버전");
+		InputAdaptorBundle.put("This where event needs to be send","이벤트가 전달될 위치");
+		InputAdaptorBundle.put("Topic","토픽");
+		InputAdaptorBundle.put("This will be the operation name for the EventBrokerService","EventBrokerService 이름");
+		InputAdaptorBundle.put("URI","URI");
+		InputAdaptorBundle.put("URI of the WS Event Server (E.g. WSO2 MB)","WS 이벤트 서버를 위한 URI (E.g. WSO2 MB)");
+		InputAdaptorBundle.put("Stream Name","스트림명");
+		
+		
+	}
+	
+    public static String getInputAdaptorBundleText(String engText) {
+    	
+    	if(engText == null) {
+    		return "";
+    	}
+    	
+    	//필요시 초기화
+    	fillInputAdaptorBundle();
+    	
+    	//log.info("Org TEXT :"+ engText);
+    	String korText = (String)InputAdaptorBundle.get(engText);
+    			
+    	if(korText != null) return korText;
+    	
+    	return engText;
+    }
+    
+private static void fillOutputAdaptorBundle() {
+		
+		//데이터가 있으면 그냥 리턴
+		if( OutputAdaptorBundle.size() > 0 ) return;
+		
+		OutputAdaptorBundle.put("Authenticator URL","인증 URL");
+		OutputAdaptorBundle.put("Auto Subscribe","자동등록");
+		OutputAdaptorBundle.put("Cluster Name","클러스터명");
+		OutputAdaptorBundle.put("Column Family Name","컬럼 페밀리 명");
+		OutputAdaptorBundle.put("Column Qualifier","컬럼 Qualifier");
+		OutputAdaptorBundle.put("Connection Factory JNDI Name","Connection Factory JNDI Name");
+		OutputAdaptorBundle.put("Custom HTTP headers, e.g. \"header1: value1, header2: value2\"","자체 HTTP 헤더, 예 \"header1: value1, header2: value2\"");
+		OutputAdaptorBundle.put("Data Source Name","데이터 소스명");
+		OutputAdaptorBundle.put("Database Name","데이터 베이스 명");
+		OutputAdaptorBundle.put("Default Subject","기본 제목");
+		OutputAdaptorBundle.put("Destination","목적지");
+		OutputAdaptorBundle.put("Destination Type","목적지 유형");
+		OutputAdaptorBundle.put("Durable Subscriber Name","Durable Subscription 명");
+		OutputAdaptorBundle.put("Email Address","메일주소");
+		OutputAdaptorBundle.put("Enable Durable Subscription","Durable Subscription 허용");
+		OutputAdaptorBundle.put("Enter the Authenticator Url","인증자 Url을 입력하세요");
+		OutputAdaptorBundle.put("Enter the Password","페스워드를 입력하세요");
+		OutputAdaptorBundle.put("Enter the Receiver Url","수신자 Url을 입력하세요");
+		OutputAdaptorBundle.put("Enter the UserName","사용자 명을 입력하세요");
+		OutputAdaptorBundle.put("HBase Configuration Path","HBase 설정 경로");
+		OutputAdaptorBundle.put("Header","헤더");
+		OutputAdaptorBundle.put("Headers","헤더");
+		OutputAdaptorBundle.put("Host Name","호스트명");
+		OutputAdaptorBundle.put("HTTP BasicAuth password","HTTP 기본인증 패스워드");
+		OutputAdaptorBundle.put("HTTP BasicAuth username","HTTP 기본인증 사용자명");
+		OutputAdaptorBundle.put("Index All Columns","전체 컬럼 인덱싱");
+		OutputAdaptorBundle.put("IP Address","IP 주소");
+		OutputAdaptorBundle.put("JNDI Initial Context Factory Class","JNDI Initial Context Factory Class");
+		OutputAdaptorBundle.put("JNDI initial context factory class. The class must implement the java.naming.spi.InitialContextFactory interface.","JNDI initial context factory class. java.naming.spi.InitialContextFactory interface를 상속 받아야 함");
+		OutputAdaptorBundle.put("JNDI Name","JNDI 이름");
+		OutputAdaptorBundle.put("JNDI Password","JNDI 비밀번호");
+		OutputAdaptorBundle.put("JNDI Provider URL","JNDI Provider URL");
+		OutputAdaptorBundle.put("JNDI Username","JNDI 사용자명");
+		OutputAdaptorBundle.put("Keyspace Name","키스페이스 명");
+		OutputAdaptorBundle.put("Name of the Cassandra cluster","카산드라 클러스터 명");
+		OutputAdaptorBundle.put("Name of the durable subscriber.","Durable Subscription 적용시 설정 명");
+		OutputAdaptorBundle.put("Name of the MySQL database","MySQL 데이터베이스 명");
+		OutputAdaptorBundle.put("Password","비밀번호");
+		OutputAdaptorBundle.put("Path of the configuration file of HBase database","HBase database 설정 파일 경로");
+		OutputAdaptorBundle.put("Phone No","전화번호");
+		OutputAdaptorBundle.put("Phone No where SMS needs to be send (eg: [country-code][number])","SMS 수신 전화번호");
+		OutputAdaptorBundle.put("Port","Port");
+		OutputAdaptorBundle.put("Provider URL","프로바이더 URL");
+		OutputAdaptorBundle.put("Proxy Host","Proxy Host");
+		OutputAdaptorBundle.put("Proxy Port","Proxy Port");
+		OutputAdaptorBundle.put("Receiver URL","수신자 URL");
+		OutputAdaptorBundle.put("Server Name","서버명");
+		OutputAdaptorBundle.put("Stream Definition","스트림 정의");
+		OutputAdaptorBundle.put("Stream Name","스트림명");
+		OutputAdaptorBundle.put("Stream Version","스트림 버전");
+		OutputAdaptorBundle.put("Subject","제목");
+		OutputAdaptorBundle.put("Table Name","테이블 명");
+		OutputAdaptorBundle.put("The default outgoing email subject","발송시 기본 설정 제목");
+		OutputAdaptorBundle.put("The JNDI name of the connection factory.","JMS 접속을 위한 Connection Factory JNDI Name");
+		OutputAdaptorBundle.put("The proxy server host","프록시 서버 호스트");
+		OutputAdaptorBundle.put("The proxy server port","프록시 서버 포트");
+		OutputAdaptorBundle.put("The target HTTP/HTTPS URL, e.g. \"http://yourhost:8080/service\"","HTTP/HTTPS URL, 예.\"http://yourhost:8080/service\"");
+		OutputAdaptorBundle.put("This will be the operation name for the EventBrokerService","EventBrokerService 이름");
+		OutputAdaptorBundle.put("This will be the unique identification for subscription","서브크립션에 대한 고유 인증값입니다.");
+		OutputAdaptorBundle.put("Topic","토픽");
+		OutputAdaptorBundle.put("Type of the destination.","JMS 목적지의 유형");
+		OutputAdaptorBundle.put("URI of the WS Event Server (E.g. WSO2 MB)","WS 이벤트 서버를 위한 URI (E.g. WSO2 MB)");
+		OutputAdaptorBundle.put("URI","URI");
+		OutputAdaptorBundle.put("URL","URL");
+		OutputAdaptorBundle.put("URL of the JNDI provider.","JNDI provider URL");
+		OutputAdaptorBundle.put("User Name","사용자명");
+		OutputAdaptorBundle.put("Username","사용자명");
+		OutputAdaptorBundle.put("Virtual Host Name","가상 호스트명");
+		OutputAdaptorBundle.put("Whether the subscription is durable or not.","Durable Subscription 허용 여부");		
+		
+	}
+	
+    public static String getOutputAdaptorBundleText(String engText) {
+    	
+    	if(engText == null) {
+    		return "";
+    	}
+    	
+    	//필요시 초기화
+    	fillOutputAdaptorBundle();
+    	
+    	//log.info("Org TEXT :"+ engText);
+    	String korText = (String)OutputAdaptorBundle.get(engText);
+    			
+    	if(korText != null) return korText;
+    	
+    	return engText;
+    }
+
+}
